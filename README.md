@@ -1,4 +1,9 @@
-used readFile
+Instructions
+->  run logsReader.js file using 'node logsReader.js' in command
+->  data will be stored in logs.json file
+->  start http server in script.js file using 'node script.js' command 
+->  index.html file in chrome or availble browser to dispaly records
+->  for errors use localhost:9000/errorLogs Api to get the number of counts
 
 Assumptions:
 if timestap at start then assuming it as command from user
