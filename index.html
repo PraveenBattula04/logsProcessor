@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Data Display with Pagination</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        img {
+            width: 50px;
+            /* Adjust size as needed */
+            height: auto;
+        }
+
+        .search-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Log Data Display</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Timestamp</th>
+                <th>IP Address</th>
+                <th>Event</th>
+                <th>Details</th>
+                <th>IoT Device Image</th>
+            </tr>
+        </thead>
+        <tbody id="logTableBody">
+            <!-- Log data will be inserted here -->
+        </tbody>
+    </table>
+
+    <div class="search-container">
+        <label for="pageNumber">Enter Page Number:</label>
+        <input type="number" id="pageNumber" placeholder="Page Number" min="1">
+        <button onclick="searchPage()">Search</button>
+        <p id="pageInfo"></p>
+    </div>
+
+    <script>
+        // Log data
+        let logData1 = [
+            {
+                user: 'user_152',
+                timestamp: '2024-12-01T16:20:41.181812',
+                ip: '196.56.235.78',
+                event: 'error',
+                details: { item_id: 7290, quantity: 3, price: 270.26 },
+                iot_device_image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABjCAIAAAC35NHlAAAByElEQVR4nO2asW3DMBBF6SCFF0iWSOUxDKRJn1VcZZCMkCaAx3CVJewuVcoUBAwBkmXq7h/JL/xXyhZ5z5+SLJKbz9/3tEYeWhcQhcTYkBgbEmPjsVpPz7u/8cHzaRvUXbjYpM/4U7hh7FCct7J9s5CoxAyF5lNQ0YUk5vn5UdHhxfyVQdxWe7sHi6EGkr8dpBj2zuZsTUPxHvAHkbNNJTZLRFzOlpXYbeLi8rSvxNiQ2A2iLzBzL0qMDYmxITE2JMYGcl7x6eM4Png57IFdlAMQm/QZf1rZcONZXH/5/lp6ik3PMD1sv8YMVulevECMYjarTB03i5jHKlPBbbGY3ypT7mZbf1ntc2yZGCquTElo5uUyJYaOKzMfmmd1U4lVx7kY3amYf4m9UzE/PYpBdkR0J9Zgn8fP6xukyyHDt5jzaQvceNRLYo33UmFDuxz2OaWIPXAtE4vb05cMYqjQIq7YIZbE/DVFWyXzUPRUVsEqea4xW311rJJzXjFXWfg6U00pA5gwvVY8aVjZ5wpyiruVwyS9/POAIzE2JMaGxNiQGBsSY0NibEiMDYmxITE2JMaGxNiQGBsSY0NibEiMDYmxITE2Viv2D4QBeNIojM4HAAAAAElFTkSuQmCC',
+                mainData: true
+            },
+            {
+                user: "user_708",
+                timestamp: "2024-11-30T15:15:40.199997",
+                ip: "205.250.15.15",
+                event: "error",
+                details: { item_id: 5415, quantity: 4, price: 170.78 },
+                iot_device_image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFkAAAA+CAIAAADPmCAaAAABW0lEQVR4nO3a0Y3CMBBFUYOoB1EDDdAqFVADFSE+BvEiQowhY3ss7v3e3bwcZWGzYXM67xOllFLa9h4QKCwUFgoLhYXCQmGhsFBYKCwUFgoLhYXCQmGhsFBYqF3vAY9u10v5F28Pxxobull8dfL57/WiaWqx5vwLf+wal0YWlRSWDvSbSHWLZgrzg34rUtGii8J8QLlIFYvuCtPKRfz/vggF8axklbNFTAjr4zZPi8gQVn6hm0V8CCuz08diFAhraa2DxVgQ1tvN3KeqtRYjXhTWfDnXhcJCYaGwUFgoLNRai0r/hm3QfDnXhXKwGPHSeLvZ57oYi2NprdvvyCgcmZ2erxfxOfILnV87I3N83Ob/PhKTo2RVlWcCduAgt/Odn49MR3QUCfTczOoiEvR5qtVMZIDn7NZ0qKPLkJ+/mPZyAn/9uZyXIrwTc5+qsFBYKCwUFgoLhYXCQt0BERZlOWh9omQAAAAASUVORK5CYII="
+            },
+            {
+                user: 'user_152',
+                timestamp: '2024-12-01T16:20:41.181812',
+                ip: '196.56.235.78',
+                event: 'error',
+                details: { item_id: 7290, quantity: 3, price: 270.26 },
+                iot_device_image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABjCAIAAAC35NHlAAAByElEQVR4nO2asW3DMBBF6SCFF0iWSOUxDKRJn1VcZZCMkCaAx3CVJewuVcoUBAwBkmXq7h/JL/xXyhZ5z5+SLJKbz9/3tEYeWhcQhcTYkBgbEmPjsVpPz7u/8cHzaRvUXbjYpM/4U7hh7FCct7J9s5CoxAyF5lNQ0YUk5vn5UdHhxfyVQdxWe7sHi6EGkr8dpBj2zuZsTUPxHvAHkbNNJTZLRFzOlpXYbeLi8rSvxNiQ2A2iLzBzL0qMDYmxITE2JMYGcl7x6eM4Png57IFdlAMQm/QZf1rZcONZXH/5/lp6ik3PMD1sv8YMVulevECMYjarTB03i5jHKlPBbbGY3ypT7mZbf1ntc2yZGCquTElo5uUyJYaOKzMfmmd1U4lVx7kY3amYf4m9UzE/PYpBdkR0J9Zgn8fP6xukyyHDt5jzaQvceNRLYo33UmFDuxz2OaWIPXAtE4vb05cMYqjQIq7YIZbE/DVFWyXzUPRUVsEqea4xW311rJJzXjFXWfg6U00pA5gwvVY8aVjZ5wpyiruVwyS9/POAIzE2JMaGxNiQGBsSY0NibEiMDYmxITE2JMaGxNiQGBsSY0NibEiMDYmxITE2Viv2D4QBeNIojM4HAAAAAElFTkSuQmCC',
+                mainData: true
+            },
+            {
+                user: "user_708",
+                timestamp: "2024-11-30T15:15:40.199997",
+                ip: "205.250.15.15",
+                event: "error",
+                details: { item_id: 5415, quantity: 4, price: 170.78 },
+                iot_device_image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFkAAAA+CAIAAADPmCAaAAABW0lEQVR4nO3a0Y3CMBBFUYOoB1EDDdAqFVADFSE+BvEiQowhY3ss7v3e3bwcZWGzYXM67xOllFLa9h4QKCwUFgoLhYXCQmGhsFBYKCwUFgoLhYXCQmGhsFBYqF3vAY9u10v5F28Pxxobull8dfL57/WiaWqx5vwLf+wal0YWlRSWDvSbSHWLZgrzg34rUtGii8J8QLlIFYvuCtPKRfz/vggF8axklbNFTAjr4zZPi8gQVn6hm0V8CCuz08diFAhraa2DxVgQ1tvN3KeqtRYjXhTWfDnXhcJCYaGwUFgoLNRai0r/hm3QfDnXhXKwGPHSeLvZ57oYi2NprdvvyCgcmZ2erxfxOfILnV87I3N83Ob/PhKTo2RVlWcCduAgt/Odn49MR3QUCfTczOoiEvR5qtVMZIDn7NZ0qKPLkJ+/mPZyAn/9uZyXIrwTc5+qsFBYKCwUFgoLhYXCQt0BERZlOWh9omQAAAAASUVORK5CYII="
+            },
+            {
+                user: 'user_152',
+                timestamp: '2024-12-01T16:20:41.181812',
+                ip: '196.56.235.78',
+                event: 'error',
+                details: { item_id: 7290, quantity: 3, price: 270.26 },
+                iot_device_image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABjCAIAAAC35NHlAAAByElEQVR4nO2asW3DMBBF6SCFF0iWSOUxDKRJn1VcZZCMkCaAx3CVJewuVcoUBAwBkmXq7h/JL/xXyhZ5z5+SLJKbz9/3tEYeWhcQhcTYkBgbEmPjsVpPz7u/8cHzaRvUXbjYpM/4U7hh7FCct7J9s5CoxAyF5lNQ0YUk5vn5UdHhxfyVQdxWe7sHi6EGkr8dpBj2zuZsTUPxHvAHkbNNJTZLRFzOlpXYbeLi8rSvxNiQ2A2iLzBzL0qMDYmxITE2JMYGcl7x6eM4Png57IFdlAMQm/QZf1rZcONZXH/5/lp6ik3PMD1sv8YMVulevECMYjarTB03i5jHKlPBbbGY3ypT7mZbf1ntc2yZGCquTElo5uUyJYaOKzMfmmd1U4lVx7kY3amYf4m9UzE/PYpBdkR0J9Zgn8fP6xukyyHDt5jzaQvceNRLYo33UmFDuxz2OaWIPXAtE4vb05cMYqjQIq7YIZbE/DVFWyXzUPRUVsEqea4xW311rJJzXjFXWfg6U00pA5gwvVY8aVjZ5wpyiruVwyS9/POAIzE2JMaGxNiQGBsSY0NibEiMDYmxITE2JMaGxNiQGBsSY0NibEiMDYmxITE2Viv2D4QBeNIojM4HAAAAAElFTkSuQmCC',
+                mainData: true
+            }
+        ];
+
+        // Pagination variables
+        const recordsPerPage = 5; // Set how many records to display per page
+        let currentPage = 1;
+
+        // Function to populate the table with log data
+        async function populateTable(logData, page, logsCount) {
+            const tableBody = document.getElementById('logTableBody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            // Populate rows for the current page
+            for (let i = 0; i < logData.length; i++) {
+                const log = logData[i];
+
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+            <td>${log.user}</td>
+            <td>${new Date(log.timestamp).toLocaleString()}</td>
+            <td>${log.ip}</td>
+            <td>${log.event}</td>
+            <td>Item ID: ${log.details.item_id}, Quantity: ${log.details.quantity}, Price: $${log.details.price.toFixed(2)}</td>
+            <td><img src="${log.iot_device_image}" alt="IoT Device Image"></td>
+        `;
+
+                tableBody.appendChild(row);
+            }
+
+            // Update page info
+            await updatePageInfo(logData, logsCount);
+        }
+
+        // Function to update page information
+        async function updatePageInfo(logData, logsCount) {
+            const totalPages = Math.ceil(logsCount / recordsPerPage);
+            const pageInfo = document.getElementById('pageInfo');
+
+            pageInfo.textContent = `You are viewing page ${currentPage} of ${totalPages}.`;
+        }
+
+        // Function to search for a page number
+        async function searchPage() {
+            const pageNumber = parseInt(document.getElementById('pageNumber').value);
+
+            if (pageNumber >= 1) {
+                currentPage = pageNumber;
+                const logData =  await logsDataApi(currentPage, recordsPerPage)
+                populateTable(logData.data, currentPage, logData.logsCount);
+            } else {
+                alert(`Please enter a valid page number between 1 and ${Math.ceil(logData.logsCount
+                 / recordsPerPage)}.`);
+            }
+        }
+
+        // Call the function to populate the table on initial load
+        // populateTable(currentPage);
+        async function logsDataApi(page, limit) {
+            return await fetch('http:localhost:9000/logs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ limit, page })
+            }).then(response => {
+                if (!response.ok) {
+                    console.log(response)
+                }
+                return response.json();
+            }).then(data => {
+                const logsCount = data.logsCount
+                data = data.logs.map(e => e.data)
+                return {data, logsCount}
+            }).catch(err => {
+                console.log(err)
+            });
+        }
+        (async function sos(){
+            const logData =  await logsDataApi(currentPage, recordsPerPage)
+            populateTable(logData.data, currentPage, logData.logsCount);
+        })()
+    </script>
+
+</body>
+
+</html>
